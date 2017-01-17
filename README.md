@@ -17,14 +17,15 @@ Use capistrano to deploy Go projects
 3. Configure in config/deploy.rb:
 
   ```ruby
-  set :go_version, "go1.4.2"
+  set :go_version, "go1.7.4"
   ```
 
-For all configuration options, please see the [defaults](https://github.com/bsm/capistrano-golang/blob/master/lib/capistrano/tasks/golang.rake#L52) section.
+For all configuration options, please see the [defaults](https://github.com/amoniacou/capistrano-golang/blob/master/lib/capistrano/tasks/golang.rake#L52) section.
 
 ### Licence
 
 ```
+Copyright (c) 2017 Amoniac OU
 Copyright (c) 2015 Black Square Media
 
 Permission is hereby granted, free of charge, to any person obtaining

@@ -20,6 +20,16 @@ namespace :go do
     end
   end
 
+  task :build do
+    on roles(fetch(:go_roles)) do
+      within release_path do
+        with rack_env: fetch(:rack_env), goroot: fetch(:goroot), path:"#{fetch(:goroot)}/bin:$PATH" do
+          execute(fetch(:go_build_cmd))
+        end
+      end
+    end
+  end
+
   def go_install(goroot, version, source)
     if not test "[ -f #{goroot}/bin/go ]"
       info "Downloading #{version}"
@@ -34,6 +44,7 @@ Capistrano::DSL.stages.each do |stage|
   after stage, 'go:hook'
 end
 after 'deploy:check', 'go:check'
+after 'deploy:updated', 'go:build'
 
 namespace :load do
   task :defaults do
@@ -44,5 +55,6 @@ namespace :load do
 
     set :go_root,   -> { File.join(fetch(:go_install_path), fetch(:go_version)) }
     set :go_source, -> { fetch(:go_archive).sub("VERSION", fetch(:go_version)) }
+    set :go_build_cmd, "go build"
   end
 end
