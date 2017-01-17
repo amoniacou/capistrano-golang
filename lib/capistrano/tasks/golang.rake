@@ -16,28 +16,15 @@ namespace :go do
 
   task :check do
     on roles(fetch(:go_roles)) do
-      if fetch(:go_version) != fetch(:go_bootstrap_version)
-        go_install(fetch(:go_bootstrap_version), fetch(:go_bootstrap_root), fetch(:go_bootstrap_source))
-      end
-
-      go_install(fetch(:go_version), fetch(:go_root), fetch(:go_source), goroot_bootstrap: fetch(:go_bootstrap_root))
+      go_install(fetch(:go_root), fetch(:go_version), fetch(:go_source))
     end
   end
 
-  def go_install(version, goroot, source, env = {})
-    if not test "[ -d #{goroot}/src ]"
+  def go_install(goroot, version, source)
+    if not test "[ -f #{goroot}/bin/go ]"
       info "Downloading #{version}"
       execute :mkdir, "-p", goroot
       execute :curl, "-sSL #{source} | tar xvz --strip-components=1 -C #{goroot}"
-    end
-
-    if not test "[ -f #{goroot}/bin/go ]"
-      info "Installing #{version}"
-      within "#{goroot}/src" do
-        with env do
-          execute :"./make.bash", %(--no-clean 2>&1)
-        end
-      end
     end
   end
 
@@ -51,13 +38,9 @@ after 'deploy:check', 'go:check'
 namespace :load do
   task :defaults do
     set :go_install_path, "~/.gos"
-    set :go_version, "go1.5"
+    set :go_version, "go1.7.4"
     set :go_roles,   :all
-    set :go_archive, "https://golang.org/dl/VERSION.src.tar.gz"
-
-    set :go_bootstrap_version, "go1.4.2"
-    set :go_bootstrap_root, -> { File.join(fetch(:go_install_path), fetch(:go_bootstrap_version)) }
-    set :go_bootstrap_source, -> { fetch(:go_archive).sub("VERSION", fetch(:go_bootstrap_version)) }
+    set :go_archive, "https://storage.googleapis.com/golang/VERSION.linux-amd64.tar.gz"
 
     set :go_root,   -> { File.join(fetch(:go_install_path), fetch(:go_version)) }
     set :go_source, -> { fetch(:go_archive).sub("VERSION", fetch(:go_version)) }
