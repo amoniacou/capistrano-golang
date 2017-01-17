@@ -24,7 +24,7 @@ namespace :go do
     on roles(fetch(:go_roles)) do
       within release_path do
         with rack_env: fetch(:rack_env), goroot: fetch(:goroot), path:"#{fetch(:goroot)}/bin:$PATH" do
-          execute(fetch(:go_build_cmd))
+          execute(*fetch(:go_build_cmd))
         end
       end
     end
